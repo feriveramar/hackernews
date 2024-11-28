@@ -10,23 +10,19 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
-import dj_database_url
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'g5-d9tal65cre4wr*oohe1t*c-9d!)9^tqcj-wiz7u_3ynj9vn'
 SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
 DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = []
@@ -35,9 +31,7 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'graphene_django',
     'links',
-    'api_logs',
+    'api_logs',  # Incluida aquí correctamente
     'corsheaders',
 ]
 
@@ -83,19 +77,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hacker_news.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
     'default': dj_database_url.config(
-        # Actualizamos la cadena de conexión con los nuevos valores.
-        default='postgresql://sakura:cartman@localhost:5432/mysite',
+        default='postgresql://sakura:cartman@localhost:5432/mysite1',  # Usando tus credenciales
         conn_max_age=600
     )
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -115,7 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -129,20 +118,17 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
-# This production code might break development mode, so we check whether we're in DEBUG mode
 if not DEBUG:
-    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    # Configuración para producción
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
-    # and renames the files with unique names for each version to support long-term caching
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# GraphQL Configuration
 GRAPHENE = {
     'SCHEMA': 'hacker_news.schema.schema',
     'MIDDLEWARE': [
@@ -150,10 +136,18 @@ GRAPHENE = {
     ],
 }
 
+# Authentication backends
 AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+# CORS configuration
 CORS_ORIGIN_ALLOW_ALL = True
 
+# API Logs configuration
+API_LOGS_CONFIG = {
+    'LOGS_DIR': os.path.join(BASE_DIR, 'logs'),  # Ruta para guardar los logs
+    'LOG_LEVEL': 'DEBUG',  # Nivel de los logs
+    'ENABLE': True,  # Activar o desactivar los logs
+}
